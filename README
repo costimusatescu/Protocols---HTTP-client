@@ -1,0 +1,45 @@
+Tema 3 PC README
+
+In rezolvarea acestei teme, punctul de plecare a fost laboratorul de http (fisierul client.c).
+
+La primul task, se creeaza conexiunea cu serverul. Astfel, se trimit pe socket mesajele generate
+de functiile get/post request. Pentru prima cerere functia compute_get_request foloseste ca 
+argumente adresa ip a serverului si url-ul. Raspunsul este primit prin acelasi socket si se
+elibereaza memoria pentru mesaj, alocata din fisierul helpers.c.
+
+Pentru rezolvarea celui de al doilea task, am folosit biblioteca Parson pentru parsarea mesajului
+din body-ul raspunsului de la server. Se foloseste obiectul obtinut in urma parsarii stringului
+dupa caracterul "{" (body-ul mesajului). Se extrag campurile sub forma de stringuri care ne 
+intereseaza : url, method, type si data (obiect json care va trebui din nou parsat, pentru a
+obtine credentialele). Pentru a nu hardcoda numele campurilor, pentru crearea form_data necesara
+cererii POST, se vor extrage atat numele, cat si valoarea acestora din obiectul ob_data (username
+si password). 
+Fuctia get_cookies va fi apelata dupa fiecare raspuns de la server. Folosind strstr, pentru a afla
+pointerii unor aparitii precum "Set-Cookie" si "; path" (unde se afla cele cookies), se vor face
+diferenta de pointeri si vor concatena cu ";" intre ele.
+Mesajul trimis inapoi catre server, pe o noua conexiune, foloseste campurile extrase din raspunsul
+anteriror. Compunerea credentialelor din form_data se ralizeaza prin cocatenarea username si password.
+
+Taskul al treilea presupune din nou parsarea raspunsului de la server. In campul data se afla o
+structura json diferenta fata de taskul anterior. Se extrag tokenul si campurile din interiorul 
+query_params(numele si valoarea id-ului). In  continuare, se extrag cookies si se compune url_params
+prin concatenarea raspunsurilor si a id-ului. Se deschide conexiunea, se trimite mesajul, folosind de
+aceasta data si tokenul, si se primeste raspunsul.
+
+La cel de al patrulea task, se va face o cerere de tip get, folosind tokenul de mai devreme, pentru
+a obtine cheia de pe server.
+
+Taskul cinci, dupa parsarea mesajul de la server, se vor folosi campurile din data, care contin parametrii 
+functiei de cerere (url, "q", "APPID" din queryparams, method), pentru a putea obtine datele pentru server.
+Se foloseste functia get_ip din laboraotrul DNS, pentru aflarea adresei IP. Se va trimite catre acesta doar
+body-ul cererii (ce se afla dupa '{');
+
+
+Variabilele folsoite pentru retinerea datelor folistoare din mesaj (url, method, type,  etc) au fost 
+alocate static, folisind o dimensiune adecvata (am presupus ca stiu dimensiunea aproximativa a lor).
+Pentru celelalte variabile (obiecte json, mesaje, raspunsuri), am alocat si eliberat memoria.
+
+Makefile - pentru testare:
+-make
+-make run
+(stergere executabil: make clean)
